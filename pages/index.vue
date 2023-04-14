@@ -1,5 +1,6 @@
 <template lang="pug">
-CollapsibleFilters
+MinimalToggle
+//- CollapsibleFilters
 </template>
 
 <script>
