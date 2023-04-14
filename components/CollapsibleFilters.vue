@@ -50,7 +50,6 @@ export default {
       country.destinations.forEach((destination, dIndex) => {
         destination.expanded = true;
         destination.contentHeight = this.calculateContentHeight(this.$refs.destinationContent, country.destinations.indexOf(destination));
-        destination.parentDestinations = country.destinations;
       });
     });
   },
@@ -67,7 +66,6 @@ export default {
     },
     toggleDestination(destination) {
       destination.expanded = !destination.expanded;
-      destination.contentHeight = this.calculateContentHeight(this.$refs.destinationContent, destination.parentDestinations.indexOf(destination));
     },
   },
 };
