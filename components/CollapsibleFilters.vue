@@ -56,14 +56,6 @@ export default {
     },
     toggleAll() {
       this.allExpanded = !this.allExpanded;
-      // this.countries.forEach((country) => {
-      //   country.expanded = this.allExpanded;
-      //   country.contentHeight = this.calculateContentHeight(this.$refs.countryContent, this.countries.indexOf(country));
-      //   country.destinations.forEach((destination) => {
-      //     destination.expanded = this.allExpanded;
-      //     destination.contentHeight = this.calculateContentHeight(this.$refs.destinationContent, country.destinations.indexOf(destination));
-      //   });
-      // });
     },
     toggleCountry(country) {
       country.expanded = !country.expanded;
@@ -84,6 +76,8 @@ li {
 
 .collapsible-wrapper {
   overflow: hidden;
+  box-shadow: 0 0 24px 0 rgba(41, 44, 51, 0.2);
+  padding: 5px;
 }
 
 .collapsible-content {
