@@ -1,7 +1,6 @@
 <template lang="pug">
 .collapsible-wrapper
   button.toggle-button(@click="toggle") {{ expanded ? '▼' : '►' }}
-
   .collapsible-content(ref="content" v-bind:style="{ maxHeight: expanded ? `${contentHeight}px` : '0' }")
     ul
       li Item 1
@@ -33,8 +32,21 @@ li {
   list-style: none;
 }
 .collapsible-wrapper {
+  border-radius: 10px;
+  box-shadow: 0 0 24px 0 rgba(41,44,51,.2);
+  position: relative;
+  max-height: 5000px;
+  transition: all .5s ease;
   overflow: hidden;
-  border: 1px solid #ccc;
+  padding: 4px;
+
+}
+.toggle-button {
+  border-radius: 5px;
+  border: none;
+  width: 100%;
+  text-align: left;
+  padding: 6px 10px;
 }
 .collapsible-content {
   transition: max-height .5s ease;
