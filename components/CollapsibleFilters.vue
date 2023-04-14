@@ -62,7 +62,6 @@ export default {
     },
     toggleCountry(country) {
       country.expanded = !country.expanded;
-      country.contentHeight = this.calculateContentHeight(this.$refs.countryContent, this.currentCountries.indexOf(country));
     },
     toggleDestination(destination) {
       destination.expanded = !destination.expanded;

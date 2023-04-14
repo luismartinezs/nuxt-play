@@ -2,6 +2,7 @@
 div
   //- MinimalToggle
   CollapsibleFilters(:countries="countries")
+  CollapsibleFiltersContainer(:countries="countries")
 </template>
 
 <script>
