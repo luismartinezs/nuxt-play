@@ -2,83 +2,48 @@
 .collapsible-wrapper
   button.toggle-button(@click="toggleAll") {{ allExpanded ? '▼' : '►' }}
 
-  transition-group(name="collapsible" tag="ul")
-    li.country(v-for="country in countries", :key="country.id")
+  ul.country-list
+    li.country(v-for="(country, cIndex) in countries", :key="country.id")
       .country-header
         button.toggle-country(@click="toggleCountry(country)") {{ country.expanded ? '▼' : '►' }}
         span {{ country.name }}
 
-      transition(name="collapsible" v-if="country.expanded")
+      .collapsible-content(v-bind:style="{ maxHeight: country.expanded ? `${country.contentHeight}px` : '0' }", ref="countryContent")
         ul.destination-list
-          li.destination(v-for="destination in country.destinations", :key="destination.id")
+          li.destination(v-for="(destination, dIndex) in country.destinations", :key="destination.id")
             .destination-header
               button.toggle-destination(@click="toggleDestination(destination)") {{ destination.expanded ? '▼' : '►' }}
               span {{ destination.name }}
 
-            transition(name="collapsible" v-if="destination.expanded")
+            .collapsible-content(v-bind:style="{ maxHeight: destination.expanded ? `${destination.contentHeight}px` : '0' }", ref="destinationContent")
               ul.zone-list
                 li.zone(v-for="zone in destination.zones", :key="zone.id") {{ zone.name }}
 </template>
 
 <script>
+import countries from "@/data/countries";
+
 export default {
   data() {
     return {
-      allExpanded: false,
-      countries: [
-  {
-    id: 1,
-    name: 'Country A',
-    expanded: false,
-    destinations: [
-      {
-        id: 1,
-        name: 'Destination A1',
-        expanded: false,
-        zones: [
-          { id: 1, name: 'Zone A1-1' },
-          { id: 2, name: 'Zone A1-2' },
-        ],
-      },
-      {
-        id: 2,
-        name: 'Destination A2',
-        expanded: false,
-        zones: [
-          { id: 3, name: 'Zone A2-1' },
-          { id: 4, name: 'Zone A2-2' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Country B',
-    expanded: false,
-    destinations: [
-      {
-        id: 3,
-        name: 'Destination B1',
-        expanded: false,
-        zones: [
-          { id: 5, name: 'Zone B1-1' },
-          { id: 6, name: 'Zone B1-2' },
-        ],
-      },
-      {
-        id: 4,
-        name: 'Destination B2',
-        expanded: false,
-        zones: [
-          { id: 7, name: 'Zone B2-1' },
-          { id: 8, name: 'Zone B2-2' },
-        ],
-      },
-    ],
-  },
-],
-
+    allExpanded: true,
+    countries
     };
+  },
+  mounted() {
+    this.countries.forEach((country, cIndex) => {
+      this.$set(country, "contentHeight", 0);
+      this.$nextTick(() => {
+        country.contentHeight = this.$refs.countryContent[cIndex].scrollHeight;
+      });
+
+      country.destinations.forEach((destination, dIndex) => {
+        this.$set(destination, "contentHeight", 0);
+        this.$nextTick(() => {
+          destination.contentHeight = this.$refs.destinationContent[dIndex].scrollHeight;
+        });
+      });
+    });
   },
   methods: {
     toggleAll() {
@@ -104,14 +69,11 @@ export default {
 li {
   list-style: none;
 }
-.collapsible-enter-active,
-.collapsible-leave-active {
-  transition: all 0.5s ease;
+.collapsible-wrapper {
+  overflow: hidden;
 }
-
-.collapsible-enter,
-.collapsible-leave-to {
-  height: 0;
-  opacity: 0;
+.collapsible-content {
+  overflow: hidden;
+  transition: max-height 0.5s ease;
 }
 </style>
