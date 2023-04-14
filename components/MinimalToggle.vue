@@ -12,7 +12,7 @@
 export default {
   data() {
     return {
-      expanded: false,
+      expanded: true,
       contentHeight: 0,
     };
   },
