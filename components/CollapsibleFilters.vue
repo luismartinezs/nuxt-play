@@ -4,7 +4,7 @@
 
   .collapsible-content(v-bind:style="{ maxHeight: allExpanded ? `${allContentHeight}px` : '0' }", ref="allContent")
     ul.country-list
-      li.country(v-for="country in countries", :key="country.id")
+      li.country(v-for="country in currentCountries", :key="country.id")
         .country-header
           button.toggle-country(@click="toggleCountry(country)") {{ country.expanded ? '▼' : '►' }}
           span {{ country.name }}
@@ -35,14 +35,18 @@ export default {
     return {
       allExpanded: true,
       allContentHeight: 0,
+      currentCountries: []
     };
+  },
+  created () {
+    this.currentCountries = this.countries;
   },
   mounted() {
     this.allContentHeight = this.$refs.allContent.scrollHeight;
 
-    this.countries.forEach((country) => {
+    this.currentCountries.forEach((country) => {
       country.expanded = true;
-      country.contentHeight = this.calculateContentHeight(this.$refs.countryContent, this.countries.indexOf(country));
+      country.contentHeight = this.calculateContentHeight(this.$refs.countryContent, this.currentCountries.indexOf(country));
       country.destinations.forEach((destination, dIndex) => {
         destination.expanded = true;
         destination.contentHeight = this.calculateContentHeight(this.$refs.destinationContent, country.destinations.indexOf(destination));
@@ -59,7 +63,7 @@ export default {
     },
     toggleCountry(country) {
       country.expanded = !country.expanded;
-      country.contentHeight = this.calculateContentHeight(this.$refs.countryContent, this.countries.indexOf(country));
+      country.contentHeight = this.calculateContentHeight(this.$refs.countryContent, this.currentCountries.indexOf(country));
     },
     toggleDestination(destination) {
       destination.expanded = !destination.expanded;
