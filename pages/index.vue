@@ -1,6 +1,7 @@
 <template lang="pug">
-//- MinimalToggle
-CollapsibleFilters(:countries="countries")
+div
+  //- MinimalToggle
+  CollapsibleFilters(:countries="countries")
 </template>
 
 <script>

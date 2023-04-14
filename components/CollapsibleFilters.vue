@@ -38,8 +38,8 @@ export default {
       currentCountries: []
     };
   },
-  created () {
-    this.currentCountries = this.countries;
+  created() {
+    this.currentCountries = JSON.parse(JSON.stringify(this.countries));
   },
   mounted() {
     this.allContentHeight = this.$refs.allContent.scrollHeight;
@@ -80,8 +80,11 @@ li {
 
 .collapsible-wrapper {
   overflow: hidden;
-  box-shadow: 0 0 24px 0 rgba(41, 44, 51, 0.2);
+  box-shadow: 0 0 12px 0 rgba(41, 44, 51, 0.2);
   padding: 5px;
+  border: 1px solid #e0e0e0;
+  margin: 10px;
+  border-radius: 8px;
 }
 
 .collapsible-content {
