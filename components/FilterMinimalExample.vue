@@ -1,31 +1,36 @@
 <template>
-  <div class="collapsible-container">
-    <div>
-      <button @click="toggleAll">{{ allExpanded ? '▼' : '►' }}</button>
-    </div>
-    <ul ref="parent" class="collapsible-content" :style="{ height: parentHeight }">
-      <li v-for="lvlOne in dataToList" :key="lvlOne.name">
-        <div>
-          <div>
+  <div class="wrapper">
+    <div class="collapsible-container card">
+      <div class="toggle-btn">
+        <span>Toggle</span>
+        <button @click="toggleAll">{{ allExpanded ? '▼' : '►' }}</button>
+      </div>
+      <ul ref="parent" class="collapsible-content" :style="{ height: parentHeight }">
+        <li v-for="lvlOne in dataToList" :key="lvlOne.name">
+          <div class="toggle-btn">
+            <span>
+              {{ lvlOne.name }}
+            </span>
             <button @click="toggleLvlOne(lvlOne)">{{ lvlOne.expanded ? '▼' : '►' }}</button>
           </div>
           <ul ref="lvlOne" class="collapsible-content" :style="{ height: lvlOne.expanded ? lvlOne.contentHeight : 0 }">
             <li v-for="lvlTwo in lvlOne.lvlTwo" :key="lvlTwo.name">
-              <div>
-                <div>
-                  <button @click="toggleLvlTwo(lvlTwo)">{{ lvlTwo.expanded ? '▼' : '►' }}</button>
-                </div>
-                <ul ref="lvlTwo" class="collapsible-content" :style="{ height: lvlTwo.expanded ? lvlTwo.contentHeight : 0 }">
-                  <li v-for="lvlThree in lvlTwo.lvlThree" :key="lvlThree">
-                    {{ lvlThree }}
-                  </li>
-                </ul>
+              <div class="toggle-btn">
+                <span>{{ lvlTwo.name }}</span>
+                <button @click="toggleLvlTwo(lvlTwo)">{{ lvlTwo.expanded ? '▼' : '►' }}</button>
               </div>
+              <ul ref="lvlTwo" class="collapsible-content" :style="{ height: lvlTwo.expanded ? lvlTwo.contentHeight : 0 }">
+                <li v-for="lvlThree in lvlTwo.lvlThree" :key="lvlThree">
+                  <div class="toggle-btn">
+                    {{ lvlThree }}
+                  </div>
+                </li>
+              </ul>
             </li>
           </ul>
-        </div>
-      </li>
-    </ul>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -155,6 +160,17 @@ ul {
 li {
   list-style: none;
 }
+.wrapper {
+  margin: 1rem;
+  font-family: sans-serif;
+}
+.card {
+  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+}
 .collapsible-container {
   max-height: 5000px;
   transition: all .5s ease;
@@ -163,5 +179,9 @@ li {
 .collapsible-content {
   transition: all .5s ease;
   overflow: hidden;
+}
+
+.toggle-btn {
+  height: 30px;
 }
 </style>
