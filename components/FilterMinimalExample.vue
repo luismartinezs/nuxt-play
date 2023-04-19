@@ -4,22 +4,25 @@
       <div class="toggle-btn">
         <span>Toggle</span>
         <button @click="toggleAll">{{ allExpanded ? '▼' : '►' }}</button>
+        <span>{{ getParentHeight() }}</span>
       </div>
-      <ul ref="parent" class="collapsible-content" :style="{ height: parentHeight + 'px' }">
+      <ul ref="parent" class="collapsible-content" :style="{ height: getParentHeight() + 'px' }">
         <li v-for="lvlOne in dataToList" :key="lvlOneKeys[lvlOne.name]">
           <div class="toggle-btn">
             <span>
               {{ lvlOne.name }}
             </span>
             <button @click="toggleLvlOne(lvlOne)">{{ lvlOne.expanded ? '▼' : '►' }}</button>
+            <span>{{ getLvlOneHeight(lvlOne) }}</span>
           </div>
-          <ul ref="lvlOne" class="collapsible-content" :style="{ height: lvlOne.expanded ? lvlOne.contentHeight + 'px' : 0 }">
+          <ul ref="lvlOne" class="collapsible-content" :style="{ height: getLvlOneHeight(lvlOne) + 'px' }">
             <li v-for="lvlTwo in lvlOne.lvlTwo" :key="lvlTwoKeys[lvlTwo.name]">
               <div class="toggle-btn">
                 <span>{{ lvlTwo.name }}</span>
                 <button @click="toggleLvlTwo(lvlTwo)">{{ lvlTwo.expanded ? '▼' : '►' }}</button>
+                <span>{{ getLvlTwoHeight(lvlTwo) }}</span>
               </div>
-              <ul ref="lvlTwo" class="collapsible-content" :style="{ height: lvlTwo.expanded ? lvlTwo.contentHeight + 'px' : 0 }">
+              <ul ref="lvlTwo" class="collapsible-content" :style="{ height: getLvlTwoHeight(lvlTwo) + 'px' }">
                 <li v-for="lvlThree in lvlTwo.lvlThree" :key="lvlThree">
                   <div class="toggle-btn">
                     {{ lvlThree }}
@@ -98,9 +101,9 @@ export default {
       currentData: [],
       dataToList: [],
       allExpanded: true,
-      parentHeight: 0,
       expandedLvlOne: [],
       expandedLvlTwo: [],
+      parentHeight: 0,
       lvlOneHeight: null,
       lvlTwoHeight: null,
       lvlOneKeys: null,
@@ -123,6 +126,7 @@ export default {
 
       this.expandedLvlOne = this.dataToList.map(lvlOne => lvlOne.name)
       this.expandedLvlTwo = this.dataToList.map(lvlOne => lvlOne.lvlTwo.map(lvlTwo => lvlTwo.name)).flat(2)
+      this.parentHeight = this.dataToList.reduce((acc, lvlOne) => (acc += HEIGHT), 0)
       this.lvlOneHeight = this.dataToList.reduce((acc, lvlOne) => {
         acc[lvlOne.name] = HEIGHT * lvlOne.lvlTwo.length
         return acc
@@ -143,21 +147,12 @@ export default {
         })
         return acc
       }, {})
-
-      this.$nextTick(() => {
-        this.parentHeight = this.getParentHeight()
-      })
-    },
-    allExpanded () {
-      this.parentHeight = this.getParentHeight()
     },
     expandedLvlOne () {
       console.debug('expandedLvlOne updated');
-      this.parentHeight = this.getParentHeight()
     },
     expandedLvlTwo () {
       console.debug('expandedLvlTwo updated');
-      this.parentHeight = this.getParentHeight()
       // recalculate lvlOne heights
       this.dataToList.forEach(lvlOne => {
         lvlOne.contentHeight = lvlOne.lvlTwo.reduce((sum, el) => (sum += el.expanded ? el.contentHeight : 0), 0)
@@ -202,10 +197,10 @@ export default {
       if (!this.allExpanded) {
         return 0
       }
-      return this.$refs.parent?.scrollHeight
+      return this.parentHeight + this.dataToList.reduce((sum, lvlOne) => (sum += this.getLvlOneHeight(lvlOne)), 0)
     },
     getLvlOneHeight (lvlOne) {
-      return this.expandedLvlOne.includes(lvlOne.name) ? (this.lvlOneHeight[lvlOne.name] + lvlOne.lvlTwo.reduce((sum, el) => this.getLvlTwoHeight(el), 0)) : 0
+      return this.expandedLvlOne.includes(lvlOne.name) ? (this.lvlOneHeight[lvlOne.name] + lvlOne.lvlTwo.reduce((sum, el) => (sum += this.getLvlTwoHeight(el)), 0)) : 0
     },
     getLvlTwoHeight (lvlTwo) {
       return this.expandedLvlTwo.includes(lvlTwo.name) ? this.lvlTwoHeight[lvlTwo.name] : 0
