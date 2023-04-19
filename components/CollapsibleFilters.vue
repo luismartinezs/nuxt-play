@@ -33,7 +33,7 @@ export default {
 
   data() {
     return {
-      allExpanded: false,
+      allExpanded: true,
       allContentHeight: 0,
       currentCountries: []
     };
@@ -45,10 +45,10 @@ export default {
     this.allContentHeight = this.$refs.allContent.scrollHeight;
 
     this.currentCountries.forEach((country) => {
-      country.expanded = false;
+      country.expanded = true;
       country.contentHeight = this.calculateContentHeight(this.$refs.countryContent, this.currentCountries.indexOf(country));
       country.destinations.forEach((destination, dIndex) => {
-        destination.expanded = false;
+        destination.expanded = true;
         destination.contentHeight = this.calculateContentHeight(this.$refs.destinationContent, country.destinations.indexOf(destination));
       });
     });
