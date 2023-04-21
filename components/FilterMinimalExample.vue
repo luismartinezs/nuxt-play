@@ -12,14 +12,14 @@
             <span>
               {{ lvlOne.name }}
             </span>
-            <button @click="toggleLvlOne(lvlOne)">{{ lvlOne.expanded ? '▼' : '►' }}</button>
+            <button @click="toggleLvlOne(lvlOne)">{{ expandedLvlOne.includes(lvlOne.name) ? '▼' : '►' }}</button>
             <span>{{ getLvlOneHeight(lvlOne) }}</span>
           </div>
           <ul ref="lvlOne" class="collapsible-content" :style="{ height: getLvlOneHeight(lvlOne) + 'px' }">
             <li v-for="lvlTwo in lvlOne.lvlTwo" :key="lvlTwoKeys[lvlTwo.name]">
               <div class="toggle-btn">
                 <span>{{ lvlTwo.name }}</span>
-                <button @click="toggleLvlTwo(lvlTwo)">{{ lvlTwo.expanded ? '▼' : '►' }}</button>
+                <button @click="toggleLvlTwo(lvlTwo)">{{ expandedLvlTwo.includes(lvlTwo.name) ? '▼' : '►' }}</button>
                 <span>{{ getLvlTwoHeight(lvlTwo) }}</span>
               </div>
               <ul ref="lvlTwo" class="collapsible-content" :style="{ height: getLvlTwoHeight(lvlTwo) + 'px' }">
@@ -96,7 +96,7 @@ const data = [
 
 export default {
   name: 'FilterMinimalExample',
-  data () {
+  data() {
     return {
       currentData: [],
       dataToList: [],
@@ -111,18 +111,10 @@ export default {
     }
   },
   watch: {
-    currentData (newVal) {
+    currentData(newVal) {
       console.debug('currentData updated');
       this.allExpanded = true
       this.dataToList = JSON.parse(JSON.stringify(newVal))
-      this.dataToList.forEach((_lvlOne) => {
-        _lvlOne.expanded = true
-        _lvlOne.contentHeight = HEIGHT * _lvlOne.lvlTwo.length
-        _lvlOne.lvlTwo.forEach(_lvlTwo => {
-          _lvlTwo.expanded = true
-          _lvlTwo.contentHeight = HEIGHT * _lvlTwo.lvlThree.length
-        })
-      })
 
       this.expandedLvlOne = this.dataToList.map(lvlOne => lvlOne.name)
       this.expandedLvlTwo = this.dataToList.map(lvlOne => lvlOne.lvlTwo.map(lvlTwo => lvlTwo.name)).flat(2)
@@ -148,16 +140,6 @@ export default {
         return acc
       }, {})
     },
-    expandedLvlOne () {
-      console.debug('expandedLvlOne updated');
-    },
-    expandedLvlTwo () {
-      console.debug('expandedLvlTwo updated');
-      // recalculate lvlOne heights
-      this.dataToList.forEach(lvlOne => {
-        lvlOne.contentHeight = lvlOne.lvlTwo.reduce((sum, el) => (sum += el.expanded ? el.contentHeight : 0), 0)
-      })
-    }
   },
   async mounted() {
     const fetchData = () =>
@@ -167,42 +149,36 @@ export default {
         }, 500);
       });
 
-      this.currentData = await fetchData();
+    this.currentData = await fetchData();
   },
   methods: {
     toggleAll() {
       this.allExpanded = !this.allExpanded
     },
-    toggleLvlOne (lvlOne) {
-      console.debug('toggleLvlOne');
-      lvlOne.expanded = !lvlOne.expanded
+    toggleLvlOne(lvlOne) {
       if (this.expandedLvlOne.includes(lvlOne.name)) {
         this.expandedLvlOne = this.expandedLvlOne.filter(name => name !== lvlOne.name)
       } else {
         this.expandedLvlOne.push(lvlOne.name)
       }
-      // this.lvlOneKeys[lvlOne.name]++
     },
-    toggleLvlTwo (lvlTwo) {
-      console.debug('toggleLvlTwo');
-      lvlTwo.expanded = !lvlTwo.expanded
+    toggleLvlTwo(lvlTwo) {
       if (this.expandedLvlTwo.includes(lvlTwo.name)) {
         this.expandedLvlTwo = this.expandedLvlTwo.filter(name => name !== lvlTwo.name)
       } else {
         this.expandedLvlTwo.push(lvlTwo.name)
       }
-      // this.lvlTwoKeys[lvlTwo.name]++
     },
-    getParentHeight () {
+    getParentHeight() {
       if (!this.allExpanded) {
         return 0
       }
       return this.parentHeight + this.dataToList.reduce((sum, lvlOne) => (sum += this.getLvlOneHeight(lvlOne)), 0)
     },
-    getLvlOneHeight (lvlOne) {
+    getLvlOneHeight(lvlOne) {
       return this.expandedLvlOne.includes(lvlOne.name) ? (this.lvlOneHeight[lvlOne.name] + lvlOne.lvlTwo.reduce((sum, el) => (sum += this.getLvlTwoHeight(el)), 0)) : 0
     },
-    getLvlTwoHeight (lvlTwo) {
+    getLvlTwoHeight(lvlTwo) {
       return this.expandedLvlTwo.includes(lvlTwo.name) ? this.lvlTwoHeight[lvlTwo.name] : 0
     }
   }
@@ -214,13 +190,16 @@ ul {
   padding: 0;
   margin: 0 0 0 1rem;
 }
+
 li {
   list-style: none;
 }
+
 .wrapper {
   margin: 1rem;
   font-family: sans-serif;
 }
+
 .card {
   background-color: #fff;
   border-radius: 4px;
@@ -228,11 +207,13 @@ li {
   box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
   padding: 1rem;
 }
+
 .collapsible-container {
   max-height: 5000px;
   transition: all .5s ease;
   overflow: hidden;
 }
+
 .collapsible-content {
   transition: all .5s ease;
   overflow: hidden;
