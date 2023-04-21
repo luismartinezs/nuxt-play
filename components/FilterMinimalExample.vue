@@ -12,14 +12,15 @@
             <span>
               {{ lvlOne.name }}
             </span>
-            <button @click="toggleLvlOne(lvlOne)">{{ expandedLvlOne.includes(lvlOne.name) ? '▼' : '►' }}</button>
+            <button @click="toggleExpansion(1, lvlOne)">{{ expandedLvlOne.includes(lvlOne.name) ? '▼' : '►' }}</button>
             <span>{{ getLvlOneHeight(lvlOne) }}</span>
           </div>
           <ul ref="lvlOne" class="collapsible-content" :style="{ height: getLvlOneHeight(lvlOne) + 'px' }">
             <li v-for="lvlTwo in lvlOne.lvlTwo" :key="lvlTwoKeys[lvlTwo.name]">
               <div class="toggle-btn">
                 <span>{{ lvlTwo.name }}</span>
-                <button @click="toggleLvlTwo(lvlTwo)">{{ expandedLvlTwo.includes(lvlTwo.name) ? '▼' : '►' }}</button>
+                <button @click="toggleExpansion(2, lvlTwo)">{{ expandedLvlTwo.includes(lvlTwo.name) ? '▼' : '►'
+                }}</button>
                 <span>{{ getLvlTwoHeight(lvlTwo) }}</span>
               </div>
               <ul ref="lvlTwo" class="collapsible-content" :style="{ height: getLvlTwoHeight(lvlTwo) + 'px' }">
@@ -119,16 +120,8 @@ export default {
       this.expandedLvlOne = this.dataToList.map(lvlOne => lvlOne.name)
       this.expandedLvlTwo = this.dataToList.map(lvlOne => lvlOne.lvlTwo.map(lvlTwo => lvlTwo.name)).flat(2)
       this.parentHeight = this.dataToList.reduce((acc, lvlOne) => (acc += HEIGHT), 0)
-      this.lvlOneHeight = this.dataToList.reduce((acc, lvlOne) => {
-        acc[lvlOne.name] = HEIGHT * lvlOne.lvlTwo.length
-        return acc
-      }, {})
-      this.lvlTwoHeight = this.dataToList.reduce((acc, lvlOne) => {
-        lvlOne.lvlTwo.forEach(lvlTwo => {
-          acc[lvlTwo.name] = HEIGHT * lvlTwo.lvlThree.length
-        })
-        return acc
-      }, {})
+      this.updateLvlOneHeight()
+      this.updateLvlTwoHeight()
       this.lvlOneKeys = this.dataToList.reduce((acc, lvlOne) => {
         acc[lvlOne.name] = Math.floor((Math.random() * 1e6))
         return acc
@@ -152,21 +145,29 @@ export default {
     this.currentData = await fetchData();
   },
   methods: {
+    updateLvlOneHeight() {
+      this.lvlOneHeight = this.dataToList.reduce((acc, lvlOne) => {
+        acc[lvlOne.name] = HEIGHT * lvlOne.lvlTwo.length
+        return acc
+      }, {})
+    },
+    updateLvlTwoHeight() {
+      this.lvlTwoHeight = this.dataToList.reduce((acc, lvlOne) => {
+        lvlOne.lvlTwo.forEach(lvlTwo => {
+          acc[lvlTwo.name] = HEIGHT * lvlTwo.lvlThree.length
+        })
+        return acc
+      }, {})
+    },
     toggleAll() {
       this.allExpanded = !this.allExpanded
     },
-    toggleLvlOne(lvlOne) {
-      if (this.expandedLvlOne.includes(lvlOne.name)) {
-        this.expandedLvlOne = this.expandedLvlOne.filter(name => name !== lvlOne.name)
+    toggleExpansion(level, item) {
+      const expandedList = level === 1 ? this.expandedLvlOne : this.expandedLvlTwo;
+      if (expandedList.includes(item.name)) {
+        expandedList.splice(expandedList.indexOf(item.name), 1);
       } else {
-        this.expandedLvlOne.push(lvlOne.name)
-      }
-    },
-    toggleLvlTwo(lvlTwo) {
-      if (this.expandedLvlTwo.includes(lvlTwo.name)) {
-        this.expandedLvlTwo = this.expandedLvlTwo.filter(name => name !== lvlTwo.name)
-      } else {
-        this.expandedLvlTwo.push(lvlTwo.name)
+        expandedList.push(item.name);
       }
     },
     getParentHeight() {
